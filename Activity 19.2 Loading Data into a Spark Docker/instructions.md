@@ -12,9 +12,11 @@ Make sure that you have successfully completed Activity 19.1 and that the Spark 
 
 From the command shell, navigate to the data folder and run a docker cp command to copy the departuredelays.csv file to the bitnami_spark_1 container’s root folder. Provide a screenshot to show that you successfully ran the docker cp command to copy the departuredelays.csv file to the Spark Docker container’s root folder.
 
-From the Docker Desktop, select the CLI for the bitnami_spark_1 container and list the contents of the root folder to verify that the departuredelays.csv file has been copied to the Spark Docker container. Provide a screenshot to show that the departuredelays.csv file has been copied to the root folder.
+`docker cp departuredelays.csv bitnami-spark-1:/departuredelays.csv`
 
-From the command line interface, enter pyspark and select the Return key. This will start up the PySpark interface. Provide a screenshot to show that you successfully started the PySpark interface.
+From the Docker Desktop, select the CLI for the bitnami-spark-1 container and list the contents of the root folder to verify that the departuredelays.csv file has been copied to the Spark Docker container. Provide a screenshot to show that the departuredelays.csv file has been copied to the root folder.
+
+From the command line interface, enter `pyspark` and select the Return key. This will start up the PySpark interface. Provide a screenshot to show that you successfully started the PySpark interface.
 
 From the PySpark interface, run the code below to create a Spark session:
 
@@ -40,11 +42,14 @@ df.createOrReplaceTempView("delays_table")
 
 Provide a screenshot to show that you successfully ran the command to load the departuredelays.csv file into a Python dataframe.
 
-From the PySpark interface, run an SQL query to find rows where the distance is greater than 1,000. Order by the distance in descending order and only show the first 10 records. Select the distance, origin, and destination columns as follows: spark.sql("""SELECT distance, origin, destination FROM delays_table WHERE distance > 1000 ORDER BY distance DESC""").show(10)
+From the PySpark interface, run an SQL query to find rows where the distance is greater than 1,000. Order by the distance in descending order and only show the first 10 records. Select the distance, origin, and destination columns as follows: 
+`spark.sql("""SELECT distance, origin, destination FROM delays_table WHERE distance > 1000 ORDER BY distance DESC""").show(10)`
 
 Provide a screenshot to show that you successfully ran the SQL query and selected the correct columns (distance, origin, and destination).
 
 From the PySpark interface, run an SQL query to find rows where the delay is > 120 AND ORIGIN = ‘SFO’ and DESTINATION = ‘ORD’ ORDER BY delay DESC. Only show the first 10 records.
+
+`spark.sql("""SELECT * FROM delays_table WHERE delay > 120 AND origin = 'SFO' AND destination = 'ORD' ORDER BY delay DESC""").show(10)`
 
 Provide a screenshot to show that you successfully ran the SQL query with the correct rows. 
 
@@ -65,12 +70,45 @@ Also, select the delay, origin, destination, and delay_length columns.
 
 Show the first 10 rows of data.
 
+```python 
+spark.sql("""
+    SELECT 
+        delay, 
+        origin, 
+        destination, 
+        CASE 
+            WHEN delay > 360 THEN 'Very Long Delays'
+            WHEN delay BETWEEN 120 AND 360 THEN 'Long Delays'
+            WHEN delay BETWEEN 60 AND 120 THEN 'Short Delays'
+            WHEN delay BETWEEN 0 AND 60 THEN 'Tolerable Delays'
+            WHEN delay = 0 THEN 'No Delays'
+            ELSE 'Early'
+        END AS delay_length
+    FROM delays_table
+    ORDER BY delay DESC
+""").show(10)
+```
+
 Provide a screenshot to show that you successfully ran the SQL query, categorized the data correctly, selected the correct columns, and showed 10 rows of data.
 
 For all of the flights in the dataset, what is the maximum delay in the dataset?
 Provide a screenshot to show that you successfully ran the query to determine the correct maximum delay for all of the flights in the dataset.
 
+```python 
+spark.sql("""
+    SELECT MAX(delay) AS max_delay
+    FROM delays_table
+""").show()
+```
+
 For all of the flights in the dataset, what is the minimum delay in the dataset?
 Provide a screenshot to show that you successfully ran the query to determine the correct minimum delay for all of the flights in the dataset.
+
+```python 
+spark.sql("""
+    SELECT MIN(delay) AS min_delay
+    FROM delays_table
+""").show()
+```
 
 Congratulations. You have successfully completed Activity 19.2. Now you know how to load data into PySpark and successfully run queries on the data using a combination of Python and SQL.
